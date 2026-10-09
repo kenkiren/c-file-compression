@@ -1,0 +1,2 @@
+hello hello ello 
+this is a simple compression test
