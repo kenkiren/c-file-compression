@@ -5,7 +5,7 @@
 #include<map>
 #include<queue>
 #include<vector>
-#include< unordered_map>;
+#include<unordered_map>
 
 using namespace std;
 
@@ -33,6 +33,20 @@ struct Compare {
         return a->freqncy > b->freqncy;
     }
 };
+
+
+void generateCode( Node* root, string code, unordered_map<char, string>& codes){
+    if( root ==NULL){
+        return ;
+    }
+    if( root ->left== nullptr && root->right ==nullptr){ //leaf node. 
+        codes[root->ch]= code;
+        return;
+    }
+    generateCode( root->left, code+ "0" , codes);
+    generateCode( root->right, code+ "1" , codes);
+}
+
 
 int main (){
     map<char,int> freq;
@@ -103,6 +117,11 @@ int main (){
 
 
 
+    unordered_map< char, string> codes;
+    generateCode( root, "", codes);
+    for( auto item : codes){
+        cout<< item.first<< " :"<<item.second<<endl;
+    }
 
 
     return 0;
