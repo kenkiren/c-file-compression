@@ -5,6 +5,7 @@
 #include<map>
 #include<queue>
 #include<vector>
+#include< unordered_map>;
 
 using namespace std;
 
@@ -49,9 +50,9 @@ int main (){
     }
 
     file.close(); // close the file after we're finished.
-    cout<<"file content  : \n";
+    // cout<<"file content  : \n";
 
-    cout<<content;
+    // cout<<content;
 
     for(char c : content){
         freq[c]++;
@@ -67,6 +68,7 @@ int main (){
         else
         cout<<pair.first<< " -"<< pair.second<<endl;
     }
+
 //in the o/p u might see , count of newline and spaces appearing before characteres, 
 // THE reason is thier ASCII VALUES. ' ' -32  and  '\n' - 10
 
@@ -74,6 +76,34 @@ int main (){
 
 
     priority_queue<Node*, vector<Node*>, Compare> pq;
+
+
+    for(auto pair: freq){
+        Node* node= new Node( pair.first, pair.second);
+        pq.push(node);
+    }// filling pq. which is min heap.
+
+    while( pq.size()>1 ){
+        Node* left= pq.top();
+        pq.pop();
+
+        Node* right = pq.top();
+        pq.pop();
+
+        Node* parent= new Node( '\0', left->freqncy+ right->freqncy);
+        parent->left= left;
+        parent->right= right;
+        pq.push(parent);
+    }
+
+    Node* root= pq.top();
+    cout<< " huffman tree built \n";
+    cout<< " root frequency :" <<root->freqncy<<endl;
+
+
+
+
+
 
     return 0;
 }   
