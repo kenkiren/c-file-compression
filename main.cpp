@@ -6,6 +6,7 @@
 #include<queue>
 #include<vector>
 #include<unordered_map>
+#include<bitset>
 
 using namespace std;
 
@@ -110,12 +111,17 @@ int main (){
         pq.push(parent);
     }
 
-    Node* root= pq.top();
+    Node* root= pq.top(); //here root is the single node left in the pq. which is the root of huffman tree. the value of root is the sum of all frequencies.
+    
+
     cout<< " huffman tree built \n";
-    cout<< " root frequency :" <<root->freqncy<<endl;
+    cout<< " root frequency :" <<root->freqncy<<endl; //huffman tree is working.
+    //now we need to generate codes for each char.
 
 
 
+
+//now we generate huffman codes. (0 and 1)  .
 
     unordered_map< char, string> codes;
     generateCode( root, "", codes);
@@ -123,6 +129,52 @@ int main (){
         cout<< item.first<< " :"<<item.second<<endl;
     }
 
+    //encoding code
+    string encode= "";
+    for( char c: content){
+        encode+= codes[c];
+    }
+    cout<< " \n encoded bits : \n";
+    cout<< encode<<endl;
+    cout<<" original chars: " << content.size()<<endl;
+    cout<<" encode bits:" << encode.size()<<endl;
 
+
+    //step9- convert bits into byte
+    string binaryBytes="";
+    for( size_t i =0; i<encode.size();i+=8){
+        string byte = encode.substr(i,8);
+        if(byte.size() < 8){
+            byte.append(8- byte.size(), '0');
+
+        }
+        binaryBytes+=byte;
+    }
+    cout << "\nBits padded to full bytes:\n";
+
+    for (size_t i = 0; i < binaryBytes.size(); i += 8) {
+        cout << binaryBytes.substr(i, 8) << " ";
+    } // now u see padded full bytes each having 8 bits.
+
+    cout << endl;
+    //step 10 convert binary string to actual byte
+    string byteString = "";
+    vector<unsigned char> bytes;
+
+    for (size_t i = 0; i < binaryBytes.size(); i += 8) {
+        byteString = binaryBytes.substr(i, 8);
+
+        unsigned char value = 0;
+
+        for (char bit : byteString) {
+            value = value * 2 + (bit - '0');
+        }
+
+        bytes.push_back(value);
+    }
+
+    cout << "Actual bytes: " << bytes.size() << endl;
+
+    
     return 0;
 }   
