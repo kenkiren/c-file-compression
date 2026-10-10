@@ -7,6 +7,7 @@
 #include<vector>
 #include<unordered_map>
 #include<bitset>
+#include <cstdint>
 
 using namespace std;
 
@@ -157,7 +158,11 @@ int main (){
     } // now u see padded full bytes each having 8 bits.
 
     cout << endl;
+
+
     //step 10 convert binary string to actual byte
+
+
     string byteString = "";
     vector<unsigned char> bytes;
 
@@ -169,12 +174,60 @@ int main (){
         for (char bit : byteString) {
             value = value * 2 + (bit - '0');
         }
-
+        // that value, it holds the actual value of that BYTE( 8 bits). 
         bytes.push_back(value);
     }
 
     cout << "Actual bytes: " << bytes.size() << endl;
-
     
+
+    //now we save our compressed bytes into a FILEEE. 
+
+
+    ofstream output( " compressed.bin ", ios::binary);
+
+    if( !output){
+        cout<<" cant create the output file \n";
+        return 1;
+    }
+        // File signature
+    output.write("HUF1", 4);
+
+    // Original content size
+    uint64_t originalSize = content.size();
+
+    output.write(
+        reinterpret_cast<const char*>(&originalSize),
+        sizeof(originalSize)
+    );
+
+    // Number of unique characters
+    uint16_t uniqueChars = freq.size();
+
+    output.write(
+        reinterpret_cast<const char*>(&uniqueChars),
+        sizeof(uniqueChars)
+    );
+
+    // Save each character and its frequency
+    for (auto item : freq) {
+        char ch = item.first;
+        uint64_t count = item.second;
+
+        output.write(&ch, sizeof(ch));
+
+        output.write(
+            reinterpret_cast<const char*>(&count),
+            sizeof(count)
+        );
+    }
+    output.write( 
+        reinterpret_cast< const char* > ( bytes.data()),
+        bytes.size()
+    );
+    output.close();
+    cout<< " binary file is successfully created \n";
+
+
     return 0;
 }   
