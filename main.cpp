@@ -295,12 +295,54 @@ int main (){
 
     cout << " : " << count << endl;
     recoveredFrequency[ch] = count;
-    
+
     }
     
+    //rebuilding the huffman tree from the recovered frequency map.
+    priority_queue<Node*, vector<Node*>, Compare> decodePQ;
+
+    for(auto item : recoveredFrequency){
+        Node* node= new Node( item.first, item.second);
+        decodePQ.push(node);
+    }
+
+    while( decodePQ.size()>1 ){
+        Node* left= decodePQ.top();
+        decodePQ.pop();
+
+        Node* right = decodePQ.top();
+        decodePQ.pop();
+
+        Node* parent= new Node( '\0', left->freqncy+ right->freqncy);
+        parent->left= left;
+        parent->right= right;
+        decodePQ.push(parent);
+    }
+    Node* decodeRoot= decodePQ.top();
+    cout<< "\n Decompression tree rebuilt successfully \n";
+    cout<< " root frequency :" <<decodeRoot->freqncy<<endl; //huffman tree is working.
+
+
+
+
+    // Now we can decode the compressed data using the rebuilt Huffman tree.
+    vector<unsigned char> compressedBytes;
+
+    char byte;
+
+    while (input.read(&byte, 1)) {
+        compressedBytes.push_back(
+            static_cast<unsigned char>(byte)
+        );
+    }
+
+    cout << "\nCompressed payload bytes: "
+     << compressedBytes.size() << endl;
+
 
     input.close();
     
 
     return 0;
 }   
+
