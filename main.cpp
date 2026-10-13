@@ -184,14 +184,22 @@ int main (){
     //now we save our compressed bytes into a FILEEE. 
 
 
-    ofstream output( " compressed.bin ", ios::binary);
+    ofstream output( "compressed.bin", ios::binary);
 
     if( !output){
         cout<<" cant create the output file \n";
         return 1;
     }
+
+
+
+    // PROVIDING METADATA TO THE FILE. SO THAT WE CAN DECOMPRESS IT LATER.
+
+
+
         // File signature
     output.write("HUF1", 4);
+
 
     // Original content size
     uint64_t originalSize = content.size();
@@ -209,6 +217,13 @@ int main (){
         sizeof(uniqueChars)
     );
 
+
+
+    
+
+
+
+
     // Save each character and its frequency
     for (auto item : freq) {
         char ch = item.first;
@@ -221,13 +236,71 @@ int main (){
             sizeof(count)
         );
     }
+
+
     output.write( 
         reinterpret_cast< const char* > ( bytes.data()),
         bytes.size()
     );
     output.close();
-    cout<< " binary file is successfully created \n";
 
+
+
+ // Now we read the compressed file and display its metadata.
+    ifstream input("compressed.bin", ios::binary);
+
+    char signature[4];
+    input.read(signature, 4);
+
+    uint64_t readoriginalSize;
+    input.read(
+        reinterpret_cast<char*>(&readoriginalSize),
+        sizeof(readoriginalSize)
+    );
+
+    uint16_t readuniqueChars;
+    input.read(
+        reinterpret_cast<char*>(&readuniqueChars),
+        sizeof(readuniqueChars)
+    );
+
+    cout << "\n--- Reading compressed file ---\n";
+    cout << "Signature: "
+        << string(signature, 4) << endl;
+    cout << "Original size: "
+        << readoriginalSize << endl;
+    cout << "Unique characters: "
+        << readuniqueChars << endl;
+
+    map<char,int> recoveredFrequency;
+
+    // cout<< " binary file is successfully created \n";
+    for (int i = 0; i < readuniqueChars; i++) {
+    char ch;
+    uint64_t count;
+
+    input.read(&ch, sizeof(ch));
+
+    input.read(
+        reinterpret_cast<char*>(&count),
+        sizeof(count)
+    );
+
+    if (ch == ' ')
+        cout << "[SPACE]";
+    else if (ch == '\n')
+        cout << "[NEWLINE]";
+    else
+        cout << ch;
+
+    cout << " : " << count << endl;
+    recoveredFrequency[ch] = count;
+    
+    }
+    
+
+    input.close();
+    
 
     return 0;
 }   
