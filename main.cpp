@@ -330,7 +330,7 @@ int main (){
 
     char byte;
 
-    while (input.read(&byte, 1)) {
+    while (input.read(&byte, 1)) {  
         compressedBytes.push_back(
             static_cast<unsigned char>(byte)
         );
@@ -340,8 +340,46 @@ int main (){
      << compressedBytes.size() << endl;
 
 
+
+    // Convert bytes back to binary string
+    string decodedContent = "";
+    Node* current = decodeRoot;
+
+    for (unsigned char byteValue : compressedBytes) {
+        for (int i = 7; i >= 0; i--) {
+            int bit = (byteValue >> i) & 1;
+
+            if (bit == 0)
+                current = current->left;
+            else
+                current = current->right;
+
+            if (current->left == nullptr &&
+                current->right == nullptr) {
+
+                decodedContent += current->ch;
+                current = decodeRoot;
+
+                if (decodedContent.size() == readoriginalSize)
+                    break;
+            }
+        }
+
+        if (decodedContent.size() == readoriginalSize)
+            break;
+    }
+    ofstream restored("restored.txt");
+
+    restored << decodedContent;
+    restored.close();
+
+    cout << "\nDecoded content:\n";
+    cout << decodedContent;
+
+    cout << "\nRestored size: "
+        << decodedContent.size() << endl;
     input.close();
-    
+
 
     return 0;
 }   
