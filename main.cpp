@@ -29,7 +29,7 @@ struct Node{
     }
 
 };
- 
+ // we need to compare the frequency of nodes, so that we can build a min heap.
 struct Compare {
     bool operator()(Node* a, Node* b){
         return a->freqncy > b->freqncy;
