@@ -8,7 +8,8 @@
 #include<unordered_map>
 #include<bitset>
 #include <cstdint>
-
+#include <sys/stat.h>
+#include<iomanip>
 using namespace std;
 
 struct Node{
@@ -50,12 +51,16 @@ void generateCode( Node* root, string code, unordered_map<char, string>& codes){
 }
 
 
-int main (){
-    map<char,int> freq;
+
+
+// making two separate funcs
+
+void compressFile(){
+     map<char,int> freq;
     
 
 
-    ifstream file("input.txt"); // means open a file for reading.
+    ifstream file("empty.txt"); // means open a file for reading.
     if( !file){
         cout<<"cant open it \n";
     }
@@ -111,7 +116,10 @@ int main (){
         parent->right= right;
         pq.push(parent);
     }
-
+    if (content.empty()) {
+    cout << "Input file is empty. Nothing to compress.\n";
+    return ;
+    }
     Node* root= pq.top(); //here root is the single node left in the pq. which is the root of huffman tree. the value of root is the sum of all frequencies.
     
 
@@ -243,6 +251,61 @@ int main (){
         bytes.size()
     );
     output.close();
+
+
+}
+
+void decompressFile(){
+
+}
+
+
+
+
+
+
+
+
+int main (){
+   
+
+
+    // Now we can compare the original and compressed file sizes.
+struct stat originalInfo, compressedInfo;
+
+if (stat("empty.txt", &originalInfo) == 0 &&
+    stat("compressed.bin", &compressedInfo) == 0) {
+
+    double originalBytes = originalInfo.st_size;
+    double compressedBytes = compressedInfo.st_size;
+
+    cout << fixed << setprecision(2);
+
+    cout << "\nOriginal size: "
+         << originalBytes << " bytes\n";
+
+    cout << "Compressed size: "
+         << compressedBytes << " bytes\n";
+
+    if (originalBytes > 0) {
+        double saved =
+            100.0 * (originalBytes - compressedBytes)
+            / originalBytes;
+
+        cout << "Space saved: " << saved << "%\n";
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
